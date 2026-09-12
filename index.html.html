@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Happy 16th Birthday ❤️</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Pacifico&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color-1: #fff0f5; /* LavenderBlush */
+            --bg-color-2: #ffe4e1; /* MistyRose */
+            --bg-color-3: #ffd1dc; /* Pastel Pink */
+            --bg-color-4: #ffffff; /* White */
+            --text-primary: #475569; /* Slate 600 */
+            --text-accent: #db2777; /* Pink 600 */
+        }
+
+        /* Strict lockdown on body to prevent glitching from moving elements */
+        body, html {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, var(--bg-color-1), var(--bg-color-2), var(--bg-color-3), var(--bg-color-4));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden !important; 
+            touch-action: none; 
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0;
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            color: var(--text-primary);
+        }
+
+        h1, h2, .romantic-font { font-family: 'Pacifico', cursive; }
+        .handwriting { font-family: 'Caveat', cursive; }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Fullscreen containers */
+        .fullscreen-container {
+            position: absolute;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            transition: opacity 0.6s ease, visibility 0.6s;
+        }
+
+        .hidden-container {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Slide mechanics */
+        .slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.95) translateY(20px);
+            z-index: 10;
+            padding: 1.5rem;
+            box-sizing: border-box;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+
+        .slide.previous {
+            transform: scale(1.05) translateY(-30px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Inner scroll for text-heavy slides to keep body locked */
+        .slide-content-wrapper {
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 32rem; /* max-w-lg */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 2rem;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .slide-content-wrapper::-webkit-scrollbar { display: none; }
+
+        .tilt-container {
+            perspective: 1000px;
+            margin: 1rem auto 1.5rem auto;
+            width: 240px;
+            max-width: 100%;
+            cursor: pointer;
+        }
+
+        .photo-frame {
+            position: relative;
+            padding: 10px 10px 30px 10px;
+            background: #ffffff;
+            box-shadow: 0 10px 25px rgba(219, 39, 119, 0.15);
+            border-radius: 6px;
+            transform-style: preserve-3d;
+            transition: transform 0.1s; 
+            will-change: transform;
+            border: 1px solid rgba(255,192,203,0.3);
+        }
+        
+        .photo-frame img {
+            border-radius: 4px;
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            background-color: #f8fafc;
+            transform: translateZ(20px);
+        }
+
+        .photo-caption {
+            position: absolute;
+            bottom: 6px; left: 0; width: 100%; text-align: center;
+            font-size: 1.2rem; color: var(--text-accent);
+            transform: translateZ(30px);
+        }
+
+        .cake-container {
+            position: relative;
+            width: 200px; height: 180px; margin-bottom: 1.5rem;
+            filter: drop-shadow(0 10px 15px rgba(255, 182, 193, 0.5));
+            transform: scale(1.1);
+            margin-top: 2rem;
+        }
+
+        .cake-tier {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 12px;
+            border: 3px solid #fbcfe8;
+            box-shadow: inset 0 -8px 0 rgba(255, 192, 203, 0.2);
+        }
+
+        .tier-bottom { width: 180px; height: 60px; bottom: 0; left: 10px; }
+        .tier-middle { width: 140px; height: 50px; bottom: 60px; left: 30px; }
+        .tier-top { width: 100px; height: 45px; bottom: 110px; left: 50px; }
+
+        .candle-group {
+            position: absolute; bottom: 155px; left: 95px; display: flex;
+            justify-content: center; width: 10px;
+        }
+
+        .candle {
+            width: 12px; height: 35px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 4px, #f472b6 4px, #f472b6 8px);
+            border-radius: 4px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .flame {
+            position: absolute;
+            width: 14px; height: 24px;
+            background-color: #fbbf24;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            top: -26px; left: -1px;
+            box-shadow: 0 0 10px #fbbf24, 0 0 20px #ea580c;
+            animation: flicker 0.4s infinite alternate;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            transform-origin: bottom center;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-3deg); opacity: 0.9; }
+            100% { transform: scale(1.1) rotate(3deg); opacity: 1; }
+        }
+
+        .flame.blown-out {
+            transform: scale(0) translateY(-10px);
+            opacity: 0; box-shadow: none;
+        }
+
+        .smoke {
+            position: absolute;
+            top: -30px; left: 2px;
+            width: 8px; height: 8px;
+            background: rgba(156, 163, 175, 0.8);
+            border-radius: 50%; opacity: 0; filter: blur(2px);
+            pointer-events: none;
+        }
+
+        .smoke.active { animation: smokeRise 2.5s ease-out forwards; }
+        .smoke:nth-child(2) { animation-delay: 0.3s; left: -2px; }
+        .smoke:nth-child(3) { animation-delay: 0.6s; left: 4px; }
+
+        @keyframes smokeRise {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.8; }
+            50% { opacity: 0.5; filter: blur(4px); }
+            100% { transform: translateY(-60px) scale(4) rotate(45deg); opacity: 0; filter: blur(6px); }
+        }
+
+        .btn-custom {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative; overflow: hidden; border: none; outline: none;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        .btn-custom:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(219, 39, 119, 0.3); }
+        .btn-custom:active { transform: translateY(1px); }
+
+        #proposal-buttons {
+            position: relative; width: 100%; min-height: 180px;
+            display: flex; justify-content: center; align-items: center; gap: 20px;
+            margin-top: 1rem;
+        }
+
+        #btn-no {
+            z-index: 50;
+            transition: top 0.15s cubic-bezier(0.2, 0, 0, 1), left 0.15s cubic-bezier(0.2, 0, 0, 1), transform 0.2s ease-out;
+        }
+
+        .spawned-yes {
+            position: fixed; 
+            z-index: 99;
+            animation: bounceFloat 1.5s infinite ease-in-out;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+            border: 2px solid white;
+        }
+
+        @keyframes bounceFloat {
+            0%, 100% { transform: translateY(0) scale(1) rotate(-3deg); }
+            50% { transform: translateY(-12px) scale(1.05) rotate(3deg); }
+        }
+
+        #crying-toast {
+            position: fixed; top: 10%; left: 50%;
+            transform: translateX(-50%) scale(0.5);
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            padding: 1rem 1.5rem; border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(219, 39, 119, 0.3);
+            display: flex; align-items: center; gap: 10px;
+            opacity: 0; pointer-events: none; z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #f472b6; white-space: nowrap;
+        }
+        
+        #crying-toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
+
+        #bg-animations {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none; overflow: hidden;
+        }
+
+        .bg-element { position: absolute; animation: floatUp linear infinite; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        .text-shadow { text-shadow: 1px 1px 3px rgba(0,0,0,0.1); }
+        .text-box { background: rgba(255,255,255,0.7); border-radius: 1rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.9); }
+    </style>
+</head>
+<body>
+
+    <!-- Background Elements Container -->
+    <div id="bg-animations"></div>
+
+    <!-- Crying Toast Alert -->
+    <div id="crying-toast">
+        <span class="text-3xl">😭</span>
+        <span class="text-lg md:text-xl font-bold text-pink-600 handwriting">Are you serious? Please don't say no!</span>
+    </div>
+
+    <div id="init-screen" class="fullscreen-container z-[9999]">
+        <div class="bg-white/80 p-8 rounded-3xl shadow-xl border border-pink-100 text-center max-w-sm mx-4 transform transition hover:scale-105">
+            <h1 class="text-5xl text-pink-500 romantic-font mb-4 text-shadow">Hello there...</h1>
+            <p class="text-lg text-slate-600 mb-6 font-semibold">I made something very special for you. Make sure your volume is up. ❤️</p>
+            <button onclick="startApp()" class="btn-custom bg-gradient-to-r from-pink-400 to-rose-400 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg w-full animate-pulse">
+                Tap to Begin ✨
+            </button>
+        </div>
+    </div>
+
+    <main class="relative w-full h-full z-20" id="main-content">
+        
+        <!-- SLIDE 0: Cake Screen -->
+        <section class="slide" id="slide-0">
+            <div class="slide-content-wrapper justify-center">
+                <h1 class="text-4xl md:text-5xl text-pink-500 mb-2 text-center text-shadow romantic-font">
+                    Happy 16th Birthday! 🎉
+                </h1>
+                
+                <div class="cake-container">
+                    <div class="cake-tier tier-bottom"></div>
+                    <div class="cake-tier tier-middle"></div>
+                    <div class="cake-tier tier-top"></div>
+                    <div class="candle-group">
+                        <div class="candle">
+                            <div class="flame" id="flame-1"></div>
+                            <div class="smoke"></div><div class="smoke"></div><div class="smoke"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="mic-instruction" class="text-center mt-4">
+                    <p class="text-lg text-slate-700 font-bold mb-4 bg-white/60 py-2 px-4 rounded-full inline-block">Blow into your microphone to blow out the candles 🎂</p>
+                    <div class="flex flex-col items-center gap-3 mt-2">
+                        <button id="btn-mic-start" onclick="initMic()" class="btn-custom bg-pink-500 text-white font-bold py-2 px-6 rounded-full text-md shadow-md">
+                            🎤 Enable Mic
+                        </button>
+                        <span id="mic-status" class="text-sm font-semibold text-pink-600 h-5"></span>
+                        <button id="btn-fallback" onclick="blowOutCandles()" class="btn-custom bg-white text-pink-400 border border-pink-300 font-semibold py-1 px-4 rounded-full text-sm shadow-sm opacity-80">
+                            Or tap here to blow out 🌬️
+                        </button>
+                    </div>
+                </div>
+
+                <div id="continue-section" class="hidden text-center mt-6">
+                    <p class="text-xl text-pink-500 handwriting font-bold mb-4">Yay! Make a wish! ✨</p>
+                    <button onclick="nextSlide()" class="btn-custom bg-gradient-to-r from-pink-400 to-rose-400 text-white font-bold py-3 px-10 rounded-full text-xl shadow-lg">
+                        Continue ❤️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 1 -->
+        <section class="slide" id="slide-1">
+            <div class="slide-content-wrapper">
+                <div class="tilt-container"><div class="photo-frame"><img src="side downwards.jpeg" alt="Photo 1"><div class="photo-caption handwriting font-bold">27 August ✨</div></div></div>
+                <div class="text-box mt-2">
+                    <p class="text-md md:text-lg text-slate-700 font-medium leading-relaxed">
+                        Happy Birthdayyy! 🥹❤️🎂<br><br>
+                        Honestly, mujhe nahi pata tha ki 27 August ko jab humne first time message kiya tha, tab humari itni achhi bonding ho jayegi. Us time main thoda nervous bhi tha, but phir pata hi nahi chala kab hum itne time tak baat karne lage. 🫶🏻
+                    </p>
+                </div>
+                <button onclick="nextSlide()" class="mt-6 btn-custom bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-8 rounded-full text-lg shadow-md">Next -></button>
+            </div>
+        </section>
+
+        <!-- SLIDE 2 -->
+        <section class="slide" id="slide-2">
+            <div class="slide-content-wrapper">
+                <div class="tilt-container"><div class="photo-frame"><img src="side view.jpeg" alt="Photo 2"><div class="photo-caption handwriting font-bold">Chess Master ♟️</div></div></div>
+                <div class="text-box mt-2">
+                    <p class="text-md md:text-lg text-slate-700 font-medium leading-relaxed">
+                        Mujhe humari chess wali conversations bhi hamesha yaad rahengi 😂♟️ Tum jab chess mein bilkul beginner thi, tab maine tumhe kaafi kuch sikhaya… but honestly, chess se zyada tumne mujhe kuch aur sikhaya — kisi ke saath genuinely comfortable hona. ❤️
+                    </p>
+                </div>
+                <button onclick="nextSlide()" class="mt-6 btn-custom bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-8 rounded-full text-lg shadow-md">Next -></button>
+            </div>
+        </section>
+
+        <!-- SLIDE 3 -->
+        <section class="slide" id="slide-3">
+            <div class="slide-content-wrapper">
+                <div class="tilt-container"><div class="photo-frame"><img src="straight eyes closed.jpeg" alt="Photo 3"><div class="photo-caption handwriting font-bold">Comfort 🫂</div></div></div>
+                <div class="text-box mt-2">
+                    <p class="text-md md:text-lg text-slate-700 font-medium leading-relaxed">
+                        Meri life mein pehli baar aisa hua hai ki main kisi ladki se itna time aur itni openly baat kar paaya. Aur sabse special baat ye hai ki tumne mujhe kabhi judge nahi kiya. Maine bhi tumhe kabhi judge nahi kiya, because I genuinely like you for the person you are. 🫂
+                    </p>
+                </div>
+                <button onclick="nextSlide()" class="mt-6 btn-custom bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-8 rounded-full text-lg shadow-md">Next -></button>
+            </div>
+        </section>
+
+        <!-- SLIDE 4 -->
+        <section class="slide" id="slide-4">
+            <div class="slide-content-wrapper">
+                <div class="tilt-container"><div class="photo-frame"><img src="hands backm.jpeg" alt="Photo 4"><div class="photo-caption handwriting font-bold">Strength ✨</div></div></div>
+                <div class="text-box mt-2">
+                    <p class="text-md md:text-lg text-slate-700 font-medium leading-relaxed">
+                        Mujhe pata hai tumhari life mein bhi kaafi kuch chal raha hai, especially family problems. Shayad har cheez tumhare liye easy nahi hoti, but phir bhi tum jis tarah sab handle karti ho, usse mujhe tumhari maturity aur strength aur zyada achhi lagti hai. Main tumhari problems solve karne ka promise nahi kar sakta, but at least itna zaroor keh sakta hoon ki jab tumhe kisi se baat karni ho, main tumhari baat sunne ke liye hamesha ready rahunga. ❤️
+                    </p>
+                </div>
+                <button onclick="nextSlide()" class="mt-6 btn-custom bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-8 rounded-full text-lg shadow-md">Next -></button>
+            </div>
+        </section>
+
+        <!-- SLIDE 5 -->
+        <section class="slide" id="slide-5">
+            <div class="slide-content-wrapper">
+                <div class="tilt-container"><div class="photo-frame"><img src="front downwards.jpeg" alt="Photo 5"><div class="photo-caption handwriting font-bold">Chocolate Cake 🍫</div></div></div>
+                <div class="text-box mt-2">
+                    <p class="text-md md:text-lg text-slate-700 font-medium leading-relaxed">
+                        Aur haan, tumhe chocolate cake kitna pasand hai ye bhi mujhe yaad hai 😂🍫🎂. Aaj honestly wish karta hoon ki main tumhare paas hota aur tumhare liye tumhara favourite chocolate cake la pata. But tum Sambhaji Nagar mein ho aur main Pune mein… humara ye long-distance thoda difficult hai. 🥹
+                    </p>
+                </div>
+                <button onclick="nextSlide()" class="mt-6 btn-custom bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-8 rounded-full text-lg shadow-md">Next -></button>
+            </div>
+        </section>
+
+        <!-- SLIDE 6 -->
+        <section class="slide" id="slide-6">
+            <div class="slide-content-wrapper">
+                <div class="text-box mt-2 w-full">
+                    <p class="text-md md:text-lg text-slate-700 font-medium leading-relaxed">
+                        Main physically tumhare birthday par tumhare saath nahi hoon, but I hope meri ye wish tum tak woh feeling zaroor pahunchaye ki someone genuinely cares about you. ❤️<br><br>
+                        Tumhari ek aur baat mujhe bahut achhi lagti hai — tum kaafi samajhdar ho. Main kisi problem mein hota hoon toh tum meri baat samajhne ki koshish karti ho, aur ye mere liye genuinely special hai.
+                    </p>
+                </div>
+                <button onclick="nextSlide()" class="mt-6 btn-custom bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-8 rounded-full text-lg shadow-md">Next -></button>
+            </div>
+        </section>
+
+        <!-- SLIDE 7 -->
+        <section class="slide" id="slide-7">
+            <div class="slide-content-wrapper">
+                <div class="tilt-container"><div class="photo-frame"><img src="side downwards.jpeg" alt="Photo 7"><div class="photo-caption handwriting font-bold">Special ❤️</div></div></div>
+                <div class="text-box mt-2">
+                    <p class="text-md md:text-lg text-slate-700 font-medium leading-relaxed">
+                        Aur shayad sabse special thing ye hai ki first time mujhe feel hua ki koi ladki mujhme itna genuine interest le rahi hai. Tum meri baatein sunti ho, mujhe samajhne ki koshish karti ho aur mujhe kabhi judge nahi karti. Honestly, mere liye ye bahut badi baat hai. 🫶🏻<br><br>
+                        Mujhe nahi pata future mein kya hoga, aur long distance bhi easy nahi hota. But jitna time humne baat ki hai, usse mujhe genuinely lagta hai ki humare beech kuch special hai. Maybe we were meant to meet. ❤️
+                    </p>
+                </div>
+                <button onclick="nextSlide()" class="mt-6 btn-custom bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-8 rounded-full text-lg shadow-md">Next -></button>
+            </div>
+        </section>
+
+        <!-- SLIDE 8 -->
+        <section class="slide" id="slide-8">
+            <div class="slide-content-wrapper justify-center h-full">
+                <div class="text-box mt-2 w-full text-center">
+                    <p class="text-lg md:text-xl text-slate-700 font-medium leading-relaxed mb-6">
+                        Main ye bhi nahi chahta ki meri feelings ki wajah se humari friendship awkward ho ya kabhi kharab ho. Tumhara answer jo bhi ho, main uski respect karunga.<br><br>
+                        But today, on your birthday, I just want to be completely honest with you…
+                    </p>
+                    <p class="text-3xl md:text-4xl text-pink-600 romantic-font mt-8 mb-4">
+                        I really like you. ❤️
+                    </p>
+                </div>
+                <button onclick="nextSlide()" class="mt-8 btn-custom bg-gradient-to-r from-pink-400 to-rose-400 text-white font-bold py-3 px-10 rounded-full text-xl shadow-lg animate-bounce">One more thing... 🥺</button>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: Proposal -->
+        <section class="slide" id="slide-9">
+            <div class="slide-content-wrapper justify-center h-full text-center w-full max-w-xl px-4">
+                <h1 class="text-3xl md:text-4xl text-pink-600 mb-6 leading-tight romantic-font text-shadow">
+                    Aur ab main tumse ek simple sa question poochna chahta hoon…
+                </h1>
+                
+                <p class="text-2xl md:text-3xl text-slate-700 mb-8 font-bold leading-relaxed bg-white/70 p-6 rounded-2xl border border-pink-100 shadow-sm">
+                    Would you give us a chance to be something more than just friends? 🥹❤️
+                </p>
+
+                <div id="proposal-buttons" class="w-full">
+                    <button onclick="acceptProposal()" class="btn-custom main-yes bg-gradient-to-r from-green-400 to-emerald-400 hover:scale-105 text-white font-bold py-4 px-12 rounded-full text-2xl shadow-lg z-10 relative">
+                        YES! 💖
+                    </button>
+                    
+                    <button id="btn-no" class="btn-custom bg-white text-slate-500 font-bold py-3 px-8 rounded-full text-xl shadow-md border border-slate-200">
+                        No
+                    </button>
+                </div>
+
+                <p class="mt-8 text-sm md:text-base text-slate-500 font-medium max-w-sm mx-auto">
+                    No pressure, no hurry. Tum apna time le sakti ho. Mujhe bas apni feelings tumse honestly share karni thi.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="success-screen" class="fullscreen-container hidden-container">
+        <div class="text-center p-6 bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-pink-200 mx-4 max-w-md">
+            <h1 class="text-5xl md:text-6xl text-pink-500 mb-6 romantic-font text-shadow">
+                She said YES! 😍
+            </h1>
+            <p class="text-2xl text-slate-700 mb-6 handwriting font-bold leading-relaxed">
+                Happy 16th Birthday! ❤️<br>I'll bring that chocolate cake soon! 🎂🍫
+            </p>
+            <div class="text-8xl mt-4 drop-shadow-xl" style="animation: heartbeat 1s infinite;">👩‍❤️‍👨</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 9;
+        
+        // State variables
+        let isCandleBlown = false;
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+        let toastTimeout;
+        let yesSpawnCount = 0;
+
+        // Start the application after user interaction
+        function startApp() {
+            const initScreen = document.getElementById('init-screen');
+            initScreen.style.opacity = '0';
+            
+            // Pre-init AudioContext to comply with browser autoplay policies
+            try {
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(window.AudioContext) {
+                    audioContext = new AudioContext();
+                }
+            } catch (e) {
+                console.warn("AudioContext init skipped", e);
+            }
+
+            setTimeout(() => {
+                initScreen.style.display = 'none';
+                document.getElementById('slide-0').classList.add('active');
+                createBackground();
+            }, 600);
+        }
+
+        async function initMic() {
+            const status = document.getElementById('mic-status');
+            const btnStart = document.getElementById('btn-mic-start');
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                btnStart.style.display = 'none';
+                status.innerText = "Listening... Blow gently into the mic! 🌬️";
+
+                if (audioContext && audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                let highVolumeFrames = 0;
+
+                function analyzeVolume() {
+                    if (isCandleBlown) {
+                        stream.getTracks().forEach(track => track.stop()); 
+                        return;
+                    }
+                    
+                    analyser.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
+                    let average = sum / bufferLength;
+                    
+                    // Threshold to detect blowing (adjust if too sensitive/insensitive)
+                    if (average > 65) { 
+                        highVolumeFrames++;
+                    } else {
+                        highVolumeFrames = 0;
+                    }
+
+                    // If loud for a few consecutive frames, trigger blow
+                    if (highVolumeFrames > 6) {
+                        blowOutCandles();
+                    } else {
+                        requestAnimationFrame(analyzeVolume);
+                    }
+                }
+                
+                analyzeVolume();
+            } catch (err) {
+                console.error("Mic access denied or failed:", err);
+                status.innerText = "Mic access failed. Just tap the button below!";
+                btnStart.style.display = 'none';
+            }
+        }
+
+        function blowOutCandles() {
+            if (isCandleBlown) return;
+            isCandleBlown = true;
+            
+            document.getElementById('mic-status').innerText = "Wishes do come true! 💨";
+            document.getElementById('btn-fallback').style.display = 'none';
+            if(document.getElementById('btn-mic-start')) {
+                document.getElementById('btn-mic-start').style.display = 'none';
+            }
+
+            // Extinguish flame and trigger smoke
+            const flame = document.getElementById('flame-1');
+            if(flame) flame.classList.add('blown-out');
+            
+            document.querySelectorAll('.smoke').forEach(s => s.classList.add('active'));
+            
+            // Show continue button
+            setTimeout(() => {
+                document.getElementById('mic-instruction').style.display = 'none';
+                document.getElementById('continue-section').classList.remove('hidden');
+                document.getElementById('continue-section').classList.add('animate-bounce');
+            }, 1500);
+        }
+
+        function nextSlide() {
+            if(currentSlide < totalSlides) {
+                const current = document.getElementById(`slide-${currentSlide}`);
+                current.classList.remove('active');
+                current.classList.add('previous');
+                
+                currentSlide++;
+                const next = document.getElementById(`slide-${currentSlide}`);
+                next.classList.remove('previous');
+                next.classList.add('active');
+            }
+        }
+
+        // Apply 3D Tilt to all photo frames
+        document.querySelectorAll('.tilt-container').forEach(container => {
+            const frame = container.querySelector('.photo-frame');
+            
+            // Mouse events
+            container.addEventListener('mousemove', e => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -15; 
+                const rotateY = ((x - centerX) / centerX) * 15;
+                frame.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            container.addEventListener('mouseleave', () => {
+                frame.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            });
+
+            // Touch events
+            container.addEventListener('touchmove', e => {
+                const touch = e.touches[0];
+                const rect = container.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -15; 
+                const rotateY = ((x - centerX) / centerX) * 15;
+                // Bound the rotation
+                const boundedX = Math.max(-20, Math.min(20, rotateX));
+                const boundedY = Math.max(-20, Math.min(20, rotateY));
+                frame.style.transform = `rotateX(${boundedX}deg) rotateY(${boundedY}deg)`;
+            }, {passive: true});
+
+            container.addEventListener('touchend', () => {
+                frame.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            });
+        });
+
+        const btnNo = document.getElementById('btn-no');
+        const toast = document.getElementById('crying-toast');
+
+        function dodgeNoButton(e) {
+            if (e && e.cancelable) e.preventDefault(); 
+
+            // Show Toast
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 1500); 
+
+            // Switch to fixed position relative to viewport
+            if (btnNo.style.position !== 'fixed') {
+                const rect = btnNo.getBoundingClientRect();
+                btnNo.style.position = 'fixed';
+                btnNo.style.left = rect.left + 'px';
+                btnNo.style.top = rect.top + 'px';
+                btnNo.style.margin = '0';
+            }
+
+            // Calculate safe boundaries
+            const padding = 30; 
+            const btnWidth = btnNo.offsetWidth || 100;
+            const btnHeight = btnNo.offsetHeight || 50;
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+            
+            const randomX = Math.max(padding, Math.random() * maxX);
+            const randomY = Math.max(padding, Math.random() * maxY);
+
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+            
+            const randomRotate = (Math.random() - 0.5) * 30;
+            btnNo.style.transform = `rotate(${randomRotate}deg) scale(0.9)`;
+
+            // Spawn multiple YES buttons
+            spawnYesButtons(3);
+        }
+
+        function spawnYesButtons(count) {
+            if(yesSpawnCount > 40) return; // Prevent DOM overload
+            
+            for(let i=0; i<count; i++) {
+                yesSpawnCount++;
+                const newYes = document.createElement('button');
+                newYes.innerText = "YES! 💖";
+                newYes.className = "btn-custom spawned-yes bg-gradient-to-r from-green-400 to-emerald-400 text-white font-bold py-2 px-6 rounded-full text-lg shadow-md";
+                
+                // Keep within viewport
+                const padding = 20;
+                const w = window.innerWidth - 100 - padding;
+                const h = window.innerHeight - 50 - padding;
+                
+                newYes.style.left = Math.max(padding, Math.random() * w) + "px";
+                newYes.style.top = Math.max(padding, Math.random() * h) + "px";
+                
+                newYes.style.animationDelay = (Math.random() * 1.5) + "s";
+                
+                newYes.onclick = acceptProposal;
+                newYes.ontouchstart = (e) => { e.preventDefault(); acceptProposal(); };
+                
+                document.body.appendChild(newYes);
+            }
+        }
+
+        // Attach evasion listeners
+        btnNo.addEventListener('mouseenter', dodgeNoButton);
+        btnNo.addEventListener('touchstart', dodgeNoButton, {passive: false});
+        btnNo.addEventListener('click', dodgeNoButton);
+
+        function acceptProposal() {
+            // Hide main content
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('bg-animations').style.display = 'none';
+            toast.style.display = 'none';
+            
+            // Remove spawned buttons
+            document.querySelectorAll('.spawned-yes').forEach(el => el.remove());
+            
+            // Show success screen
+            const successMsg = document.getElementById('success-screen');
+            successMsg.classList.remove('hidden-container');
+            successMsg.style.opacity = '1';
+            successMsg.style.visibility = 'visible';
+            
+            triggerMassiveCelebration();
+        }
+
+        function triggerMassiveCelebration() {
+            // Confetti loop
+            const duration = 15 * 1000; 
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+
+                const particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 } 
+                }));
+            }, 250);
+
+            // Floating Emoji loop
+            setInterval(() => {
+                let heart = document.createElement('div');
+                const emojis = ['🎂', '💖', '🎉', '🍫', '💕', '❤️', '✨'];
+                heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                heart.className = 'absolute text-4xl md:text-6xl drop-shadow-lg';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = '110vh';
+                heart.style.zIndex = '9999';
+                
+                const animDuration = Math.random() * 3 + 3;
+                heart.style.transition = `transform ${animDuration}s linear, opacity ${animDuration}s linear`;
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.style.transform = `translateY(-120vh) rotate(${Math.random() * 360}deg) scale(${Math.random() * 0.5 + 0.8})`;
+                    heart.style.opacity = '0';
+                }, 50);
+
+                setTimeout(() => { heart.remove(); }, animDuration * 1000);
+            }, 150);
+        }
+
+        // Helper: initial background floaters
+        function createBackground() {
+            const container = document.getElementById('bg-animations');
+            const emojis = ['🎈', '🤍', '🌸', '✨', '☁️'];
+            for (let i = 0; i < 20; i++) {
+                let el = document.createElement('div');
+                el.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                el.className = 'bg-element text-xl md:text-3xl';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 15 + 15) + 's';
+                el.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(el);
+            }
+        }
+    </script>
+</body>
+</html>
